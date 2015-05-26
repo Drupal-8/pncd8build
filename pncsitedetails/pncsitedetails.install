@@ -1,0 +1,13 @@
+<?php
+/**
+ * @file
+ * Added site details to standard drupal build.
+ */
+
+
+/**
+ * Implements hook_install().
+ */
+function pncsitedetails_install() {
+
+}

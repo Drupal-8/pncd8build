@@ -1,0 +1,243 @@
+<?php
+/**
+ * @file
+ *
+ */
+
+
+
+/**
+ * Implements hook_menu().
+ *
+ */
+function pncsitedetails_menu() {
+  $items = array();
+
+  $items['admin/editorpanel'] = array(
+    'title' => 'Edit Business Details',
+    'page callback' => 'drupal_goto',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('form_pncsitedetails'),
+    'access arguments' => array('access editor control panel'),
+    'weight' => 50,
+    'type' => MENU_LOCAL_TASK,
+    'file' => 'pncsitedetails.inc',
+  );
+   
+  return $items;
+}
+
+/**
+ * Implements hook_permission().
+ */
+function pncsitedetails_permission() {
+  return array(
+    'access editor control panel' => array(
+      'title' => t('Access editor control panel'),
+    )
+  );
+}
+
+/**
+ * Implements hook_block_info().
+ */
+function pncsitedetails_block_info() {
+$blocks = array();
+
+$blocks['pncsitesocial_block'] = array(
+    'info' => t('Website Social Networking Details'),
+    'cache' => DRUPAL_NO_CACHE,
+    'status' => 1,
+    'region' => 'header',
+    'theme'=>'pncmbtheme',
+    'title'=>'<none>',
+);
+$blocks['pncsitehours_block'] = array(
+    'info' => t('Website Business Hours Details '),
+    'cache' => DRUPAL_NO_CACHE,
+    'status' => 1,
+    'region' => 'sidebar_first',
+    'theme'=>'pncmbtheme',
+);
+$blocks['pncsitecontact_block'] = array(
+    'info' => t('Website Business Contact Details'),
+    'cache' => DRUPAL_NO_CACHE,
+    'status' => 1,
+    'region' => 'sidebar_first',
+    'theme'=>'pncmbtheme',
+);
+
+$blocks['pncsitephone_block'] = array(
+    'info' => t('Website Phone Number'),
+    'cache' => DRUPAL_NO_CACHE,
+    'status' => 1,
+    'region' => 'navigation',
+    'theme'=>'pncmbtheme',
+    'title'=>'<none>',
+);
+ return $blocks;
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function pncsitedetails_block_view($delta = '') {
+  $block = array();
+
+  switch ($delta) {
+    case 'pncsitesocial_block':	    
+      if(    ''  !=   variable_get('pnc_twitter')
+	    ||  ''  !=   variable_get('pnc_facebook')
+	    ||  ''  !=   variable_get('pnc_linkedin')
+	    ||  ''  !=   variable_get('pnc_business_email')) {
+            $block = array(
+              'subject' => t('Social Networking'),
+              'content' => _pnc_get_social_info(),
+          );
+	}
+      break;
+      case 'pncsitehours_block':
+       if(   ''  !=   variable_get('pnc_monday')
+	       ||  ''  !=   variable_get('pnc_tuesday')
+	       ||  ''  !=   variable_get('pnc_wednesday')
+               ||  ''  !=   variable_get('pnc_thursday')
+	       ||  ''  !=   variable_get('pnc_friday')
+	       ||  ''  !=   variable_get('pnc_saturday')
+	       ||  ''  !=   variable_get('pnc_sunday')) {
+            $block = array(
+              'subject' => t('Trading Hours'),
+              'content' => _pnc_get_hours_info(),
+            );
+	 }
+      break;
+      case 'pncsitecontact_block':
+      if(    ''  !=   variable_get('pnc_address')
+	       ||  ''  !=   variable_get('pnc_postal_address')
+               ||  ''  !=   variable_get('pnc_business_fax')
+	       ||  ''  !=   variable_get('pnc_business_abn_acn')) {
+
+            $block = array(
+              'subject' => t('Contact Details'),
+               'content' => _pnc_get_contact_info(),
+            );
+	 }
+      break;
+      case 'pncsitephone_block':
+      if( ''  !=   variable_get('pnc_phone')) {
+            $block = array(
+              'subject' => t('Contact Details'),
+              'content' => _pnc_get_contact_phone(),
+            );
+   }
+
+
+  }
+  return $block;
+}
+
+/**
+ * Adds content to the block
+ * @return string
+ */
+function _pnc_get_social_info() {
+
+  $output = "<ul class='pnc-social'>";
+    if( ''  !=   variable_get('pnc_twitter')) {
+	$output .= "<li class='twitter'>"
+	. "<a href='https://twitter.com/".variable_get('pnc_twitter')."'>".variable_get('pnc_twitter') ."</a>"
+	. "</li>";
+    }
+
+    if( ''  !=   variable_get('pnc_facebook')) {
+        $output .= "<li class='facebook'>"
+	. "<a href='https://facebook.com/".variable_get('pnc_facebook')."'>".variable_get('pnc_facebook') ."</a>"
+	. "</li>";
+    }
+
+    if( ''  !=   variable_get('pnc_linkedin')) {
+        $output .= "<li class='linkedin'>"
+	. "<a href='https://linkedin.com/".variable_get('pnc_linkedin')."'>".variable_get('pnc_linkedin') ."</a>"
+	. "</li>";
+    }
+
+    if( ''  !=   variable_get('pnc_business_email')) {
+        $output .= "<li class='email'>"
+	. "<a href='mailto:".variable_get('pnc_business_email')."'>".variable_get('pnc_business_email') ."</a>"
+	. "</li>";
+    }
+  $output .= "</ul>";
+  return $output;
+}
+
+/**
+ * Adds content to the block
+ * @return string
+ */
+function _pnc_get_hours_info() {
+
+    $output = "<ul class='pnc-hours'>";
+    if( ''  !=   variable_get('pnc_monday')) {
+      $output .= "<li><span>Monday </span><span>".variable_get('pnc_monday') ."</span></li>";
+    }
+    if( ''  !=   variable_get('pnc_tuesday')) {
+      $output .= "<li><span>Tuesday </span><span>".variable_get('pnc_tuesday') ."</span></li>";
+    }
+    if( ''  !=   variable_get('pnc_wednesday')) {
+      $output .= "<li><span>Wednesday </span><span>".variable_get('pnc_wednesday') ."</span></li>";
+    }
+    if( ''  !=   variable_get('pnc_thursday')) {
+      $output .= "<li><span>Thursday </span><span>".variable_get('pnc_thursday') ."</span></li>";
+    }
+    if( ''  !=   variable_get('pnc_friday')) {
+      $output .= "<li><span>Friday </span><span>".variable_get('pnc_friday') ."</span></li>";
+    }
+    if( ''  !=   variable_get('pnc_saturday')) {
+      $output .= "<li><span>Saturday </span><span>".variable_get('pnc_saturday') ."</span></li>";
+    }
+    if( ''  !=   variable_get('pnc_sunday')) {
+      $output .= "<li><span>Sunday </span><span>".variable_get('pnc_sunday') ."</span></li>";
+    }
+    
+    $output .= "</ul>";
+    if( ''  !=   variable_get('pnc_trading_hours')) {
+      $output .= "<p><span>Other</span><span>".variable_get('pnc_trading_hours') ."</span></p>";
+    }
+
+  return $output;
+}
+
+/**
+ * Adds content to the block
+ * @return string
+ */
+function _pnc_get_contact_info() {
+     $output = "<ul>";
+     if( ''  !=   variable_get('pnc_business_fax')) {
+       $output .= "<li><span>Fax </span><span>".variable_get('pnc_business_fax') ."</span></li>";
+     }
+
+     if( ''  !=   variable_get('pnc_business_abn_acn')) {
+       $output .= "<li><span>ABN/ACN </span><span>".variable_get('pnc_business_abn_acn') ."</li>";
+     }
+   
+     if( ''  !=   variable_get('pnc_address')) {
+       $output .= "<li class='address'><span>Address </span><span>".variable_get('pnc_address') ."</span></li>";
+     }
+     if( ''  !=   variable_get('pnc_postal_address')) {
+       $output .= "<li class='postal'><span>Postal Address </span><span>".variable_get('pnc_postal_address') ."</span></li>";
+     }
+       $output .= "</ul>";
+  return $output;
+
+}
+
+/**
+ * Adds content to the block
+ * @return string
+ */
+function _pnc_get_contact_phone() {
+  if( ''  !=   variable_get('pnc_phone')) {
+    return "<div class='ph-container'><div><span class='p-text'>Business Phone Number</span><span class='phone'></span><span>".variable_get('pnc_phone') ."</span></div></div>";
+  }
+
+}

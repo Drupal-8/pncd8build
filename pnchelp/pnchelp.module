@@ -1,0 +1,188 @@
+<?php
+// $Id$
+
+/**
+ * @file
+ * Adds a generic block to the build with content of the users choice.
+ *
+ */
+
+/**
+ * Implements hook_block_info().
+ */
+function pnchelp_block_info() {
+$blocks = array();
+
+  $blocks['pnchelp1_block'] = array(
+    'info' => t('Help 1'),
+    'cache' => DRUPAL_NO_CACHE,
+    'weight' => 15,
+    'status' => 1,
+    'region' => 'footer',
+    'theme'=>'pncmbtheme',
+    'title'=>'<none>',
+  );
+  $blocks['pnchelp2_block'] = array(
+    'info' => t('Help 2 '),
+    'cache' => DRUPAL_NO_CACHE,
+    'weight' => 14,
+    'status' => 1,
+    'region' => 'footer',
+    'theme'=>'pncmbtheme',
+    'title'=>'<none>',
+  );
+  $blocks['pnchelp3_block'] = array(
+    'info' => t('Help 3'),
+    'cache' => DRUPAL_NO_CACHE,
+    'weight' => 13,
+    'status' => 1,
+    'region' => 'footer',
+    'theme'=>'pncmbtheme',
+    'title'=>'<none>',
+  );
+  
+  $blocks['pnchelp4_block'] = array(
+    'info' => t('Help 4'),
+    'cache' => DRUPAL_NO_CACHE,
+    'weight' => 13,
+    'status' => 1,
+    'region' => 'footer',
+    'theme'=>'pncmbtheme',
+    'title'=>'<none>',
+  );
+ return $blocks;
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function pnchelp_block_view($delta = '') {
+  $block = array();
+  $url = request_uri();
+
+  switch ($delta) {
+    case 'pnchelp1_block':
+      if(preg_match('/\/user\/[0-9]\/edit/', $url)  || preg_match('/\/users\/\w[a-zA-Z]+/', $url)) {
+          $block = array(
+              'subject' => t('pnchelp1_block'),
+              'content' => _pnc_get_block_help_one(),
+          );
+       }
+      break;
+      case 'pnchelp2_block':
+       if(strpos($url, "user") && !preg_match('/\/user\/[0-9]\/edit/', $url)  ) {
+            $block = array(
+              'subject' => t('pnchelp2_block'),
+              'content' => _pnc_get_block_help_two(),
+            );
+	 }
+      break;
+      case 'pnchelp3_block':
+      if(strpos($url, "admin/editorpanel")) {
+            $block = array(
+              'subject' => t('pnchelp3_block'),
+              'content' => _pnc_get_block_help_three(),
+            );
+	 }
+      break;
+      case 'pnchelp4_block':
+      if(!user_is_anonymous()) {
+            $block = array(
+              'subject' => t('pnchelp4_block'),
+              'content' => _pnc_get_block_help_four(),
+            );
+	 }
+      break;
+  }
+  return $block;
+}
+
+
+/**
+ * Adds content to the block
+ * @return string
+ */
+function _pnc_get_block_help_one() {
+
+  $output = "<div id='pnc-help'>
+    <div class='help-slide'>
+    <div class='help-cont'>
+	        <a href='#' class='h-slide-mobile'>Close</a>
+      Help One
+      </div>
+    </div>
+      <a href='#' class='help-slide-c'>Help</a>
+      <a href='#' class='help-slide-m-c'>Help</a>
+  </div>
+  ";
+
+  return $output;
+}
+
+
+/**
+ * Adds content to the block
+ * @return string
+ */
+function _pnc_get_block_help_two() {
+
+  $output = "<div id='pnc-help'>
+    <div class='help-slide'>
+      <div class='help-cont'>
+             <a href='#' class='h-slide-mobile'>Close</a>
+      <h2>How to login</h2>
+         <iframe width='300' height='169' src='https://www.youtube.com/embed/iX-QaNzd-0Y?list=RDiX-QaNzd-0Y&amp;showinfo=0' frameborder='0' allowfullscreen></iframe>
+      </div>
+    </div>
+      <a href='#' class='help-slide-c'>Help</a>
+  </div>
+  ";
+
+  return $output;
+}
+
+
+/**
+ * Adds content to the block
+ * @return string
+ */
+function _pnc_get_block_help_three() {
+
+  $output = "<div id='pnc-help'>
+    <div class='help-slide'>
+     <div class='help-cont'>
+              <a href='#' class='h-slide-mobile'>Close</a>
+      Help Three
+      </div>
+    </div>
+     <a href='#' class='help-slide-c'>Help</a>
+  </div>
+  ";
+
+  return $output;
+}
+
+/**
+ * Adds content to the block
+ * @return string
+ */
+function _pnc_get_block_help_four() {
+
+  $output = "<div id='pnc-help'>
+    <div class='help-slide'>
+    <div class='help-cont'>
+                <a href='#' class='h-slide-mobile'>Close</a>
+       <h2>Help Four</h2>
+       <ol>
+       <li>Do thing one</li>
+        <li>Do thing two</li>
+	 <li>Do thing three</li>
+       </ol>
+      </div>
+    </div>
+     <a href='#' class='help-slide-c'>Help</a>
+  </div>
+  ";
+
+  return $output;
+}

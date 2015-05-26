@@ -1,0 +1,19 @@
+<?php
+/**
+ * @file
+ * Added extra to standard drupal build.
+ */
+/**
+ * Implements hook_install().
+ */
+function pnccopyright_update_7001() {
+  db_update('block')
+  ->fields(array(
+    'status' => 1,
+    'region' => 'footer',
+    'title' => '<none>',
+  ))
+  ->condition('theme', 'pncmbtheme', '=')
+  ->condition('module', 'pnccopyright', '=')
+  ->execute();
+}

@@ -1,0 +1,49 @@
+<?php
+// $Id$
+
+/**
+ * @file
+ * Adds a generic block to the build with content of the users choice.
+ *
+ */
+
+
+function pnccopyright_block_info() {
+$blocks = array();
+
+$blocks['purencool_copyright'] = array(
+    'info' => t('Purencool Copyright'),
+    'cache' => DRUPAL_NO_CACHE,
+    'status' => 1,
+    'region' => 'footer',
+    'theme'=>'pncmbtheme',
+    'title'=>'<none>',
+ );
+ return $blocks;
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function pnccopyright_block_view($delta = '') {
+  $block = array();
+
+  switch ($delta) {
+    case 'purencool_copyright':
+      $block = array(
+        'subject' => t('Copyright'),
+        'content' => "
+         <div class='copy-right'>
+	   <div>
+           <p class='copy-by'> &copy;  ". date("Y") ."  <span class='right-name'></span> all rights reserved</p>
+           <p class='design-by'><a href='http://www.purencool.com.au' 
+	      title='Designed and Developed by Purencool Website Develoment' 
+	      rel='nofollow'>Purencool website development</a>
+	   </p>
+	   </div>
+         </div>",
+      );
+      break;
+  }
+  return $block;
+}

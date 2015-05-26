@@ -1,0 +1,262 @@
+<?php
+/**
+ * @file
+ * Added extra to standard drupal build.
+ */
+ function testArticle(){
+
+   return '<h1> This is a h1 </h1>
+   <h2> This is a h2 </h2>
+   <h3> This is a h3 </h3>
+   <h4> This is a h4 </h4>
+   <h5> This is a h5 </h5>
+   <h6> This is a h6 </h6>
+   <br/>
+   <p>
+   Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+   Maecenas ut arcu scelerisque, efficitur massa sit amet, luctus massa.
+   Fusce interdum finibus sem, facilisis dapibus orci. Proin vehicula, mauris
+   id varius eleifend, ante tortor vestibulum lorem, et ultrices dui nisi sed
+   sapien. Nam et enim a erat accumsan iaculis vitae eget metus. Nulla dui justo,
+   tristique sit amet lacinia a, ornare vel enim. Vestibulum dictum neque dolor,
+   a viverra augue lobortis non. Vestibulum nibh elit, dapibus mollis aliquet sit amet,
+   tempor non felis. Mauris eu est sem.
+   </p>
+   <p>
+   Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+   Maecenas ut arcu scelerisque, efficitur massa sit amet, luctus massa.
+   Fusce interdum finibus sem, facilisis dapibus orci. Proin vehicula, mauris
+   id varius eleifend, ante tortor vestibulum lorem, et ultrices dui nisi sed
+   sapien. Nam et enim a erat accumsan iaculis vitae eget metus. Nulla dui justo,
+   tristique sit amet lacinia a, ornare vel enim. Vestibulum dictum neque dolor,
+   a viverra augue lobortis non. Vestibulum nibh elit, dapibus mollis aliquet sit amet,
+   tempor non felis. Mauris eu est sem.
+   </p>
+   <h6> This is a ul list </h6>
+   <ul>
+   <li>Testing ul </li>
+   <li>
+   Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas ut arcu scelerisque,
+   efficitur massa sit amet, luctus massa. Fusce interdum finibus sem, facilisis dapibus orci.
+   Proin vehicula, mauris id varius eleifend, ante tortor vestibulum lorem, et ultrices dui nisi sed sapien.
+   </li>
+   </ul>
+   <h6> This is a ol list </h6>
+   <ol>
+   <li>Testing ul </li>
+   <li>
+   Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas ut arcu scelerisque,
+   efficitur massa sit amet, luctus massa. Fusce interdum finibus sem, facilisis dapibus orci.
+   Proin vehicula, mauris id varius eleifend, ante tortor vestibulum lorem, et ultrices dui nisi sed sapien.
+   </li>
+   </ol>
+   <h6> This is a dl </h6>
+   <dl>
+   <dt>Coffee</dt>
+   <dd>
+     Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas ut arcu scelerisque,
+     efficitur massa sit amet, luctus massa. Fusce interdum finibus sem, facilisis dapibus orci.
+     Proin vehicula, mauris id varius eleifend, ante tortor vestibulum lorem, et ultrices dui nisi sed sapien.
+   </dd>
+   <dt>Milk</dt>
+   <dd>No thanks</dd>
+ </dl>
+ <h6> This is a blockquote</h6>
+ <blockquote cite="http://www.purencool.com/index.html">
+   For 50 years, WWF has been protecting the future of nature.
+   The world\'s leading conservation organization,
+   WWF works in 100 countries and is supported by 1.2 million
+   members in the United States and close to 5 million globally.
+ </blockquote>
+ <h6> This is a a wrapped in a link div </h6>
+ <div>
+   <a href="">I am test link and I am currently wrapped in a div</a>
+ </div>';
+}
+
+
+
+function node404(){
+  return '<div class="not-found page-error">Sorry page not found</div>';
+}
+
+
+function node403(){
+  return '<div class="access-denied  page-error">You don\'t have access to this page</div>';
+}
+
+
+/**
+ * Implements hook_install().
+ */
+function pncextras_install() {
+
+   //-- Added an extra roll called editor.
+   $editor_role = new stdClass();
+   $editor_role->name = 'editor';
+   $editor_role->weight = 3;
+   user_role_save($editor_role);
+   $editor_id = $editor_role->rid;
+
+   //-- Define our editor role permissions
+   $perms = array(
+     'access content'
+   );
+
+   //-- Grant the permissions.
+   user_role_grant_permissions($editor_id, $perms);
+
+
+   //-- Disable login block
+   db_update('block')
+   ->fields(array(
+     'status' => 0,
+   ))
+   ->condition('theme','pncmbtheme', '=')
+   ->condition('delta', 'login', '=')
+   ->execute();
+
+   //-- Disable power-by block
+   db_update('block')
+   ->fields(array(
+     'status' => 0,
+   ))
+   ->condition('theme','pncmbtheme', '=')
+   ->condition('delta', 'powered-by', '=')
+   ->execute();
+
+
+   //-- Move menu-menu block to the navigation
+   db_update('block')
+   ->fields(array(
+     'status' => 1,
+     'region' => 'navigation',
+     'title' => '<none>',
+   ))
+   ->condition('theme', 'pncmbtheme', '=')
+   ->condition('delta', 'main-menu', '=')
+   ->execute();
+   
+   
+   
+    //-- Move testimonials to sidebar
+   /*db_update('block')
+   ->fields(array(
+     'status' => 1,
+     'region' => 'sidebar_first',
+     'title' => '<none>',
+     'weight' => '15',
+   ))
+   ->condition('theme', 'pncmbtheme', '=')
+   ->condition('delta', 'testimonial-testimonial', '=')
+   ->execute();
+*/
+
+    //-- Disable navigation block
+   db_update('block')
+   ->fields(array(
+     'region' => -1,
+   ))
+   ->condition('theme', 'pncmbtheme', '=')
+   ->condition('delta', 'navigation', '=')
+   ->execute();
+
+
+   //-- Page 403 error page
+   $node403 = new stdClass();
+   $node403->type = 'page';
+   node_object_prepare($node404);
+
+   $node403->title    = 'Access denied';
+   $node403->language = LANGUAGE_NONE;
+   $node403->body[$node403->language][0]['value']   = node403();
+   $node403->body[$node403->language][0]['format']  = 'full_html';
+   $node403->changed = $_SERVER['REQUEST_TIME']; //yet to be tested
+   $node403->created = $_SERVER['REQUEST_TIME']; //yet to be tested
+   $node403->status = 1;        // 1 means published
+   $node403->promote = 0;
+   $node403->revision = 0;
+   $node403->path['alias'] = 'access-denied';
+   node_submit($node403);
+   node_save($node403);
+
+   variable_set('site_403', 'node/1');
+
+
+
+   //-- Page 404 error page
+   $node404 = new stdClass();
+   $node404->type = 'page';
+   node_object_prepare($node404);
+
+   $node404->title    = 'Not found';
+   $node404->language = LANGUAGE_NONE;
+   $node404->body[$node404->language][0]['value']   = node404();
+   $node404->body[$node404->language][0]['format']  = 'full_html';
+   $node404->changed = $_SERVER['REQUEST_TIME']; //yet to be tested
+   $node404->created = $_SERVER['REQUEST_TIME']; //yet to be tested
+   $node404->status = 1;        // 1 means published
+   $node404->promote = 0;
+   $node404->revision = 0;
+   $node404->path['alias'] = 'not-found';
+   node_submit($node404);
+   node_save($node404);
+
+   variable_set('site_404', 'node/2');
+
+
+   //-- About page
+   $node = new stdClass();
+   $node->type = 'page';
+   node_object_prepare($node);
+
+   $node->title    = 'About';
+   $node->language = LANGUAGE_NONE;
+   $node->menu['enabled'] = 1;       // 1 to enable providing a link in main menu
+   $node->menu['link_title'] = 'About';
+   $node->menu['description'] = 'What is this website about page';
+   $node->menu['parent'] = 'main-menu:0';
+   $node->menu['weight'] = 5;
+   $node->body[$node->language][0]['value']   = testArticle();
+   $node->body[$node->language][0]['format']  = 'full_html';
+   $node->changed = $_SERVER['REQUEST_TIME']; //yet to be tested
+   $node->created = $_SERVER['REQUEST_TIME']; //yet to be tested
+   $node->status = 1;        // 1 means published
+   $node->promote = 0;
+   $node->revision = 0;
+   $node->path['alias'] = 'about';
+   node_submit($node);
+   node_save($node);
+
+
+   variable_set('site_frontpage', 'node/3');
+
+   //-- Set mobile menu
+   if (module_exists('module_filter')) {
+     variable_set('module_filter_use_switch', '0');
+   }
+
+   //-- Set mobile menu
+   if (module_exists('mobile_navigation')) {
+     variable_set('mobile_navigation_width',
+      'all and (min-width: 768px) and (min-device-width: 768px),
+      (max-device-width: 800px) and (min-width: 768px) and (orientation:landscape)');
+     variable_set('mobile_navigation_menuselector', '.navigation nav ul.menu');
+     variable_set('mobile_navigation_plugin', 'slideMenu');
+     variable_set('mobile_navigation_showEffect', 'fixed_left');
+     variable_set('mobile_navigation_showitems', 'all');
+     variable_set('mobile_navigation_special_classes', '1');
+     variable_set('mobile_navigation_width', '100');
+     variable_set('mobile_navigation_tabhandler', '0');
+     variable_set('mobile_navigation_useMask', '0');
+   }
+
+
+   //-- Set mobile menu
+   if (module_exists('jquery_update')) {
+     variable_set('jquery_update_compression_type','min');
+     variable_set('jquery_update_jquery_admin_version', '');
+     variable_set('jquery_update_jquery_cdn', 'none');
+     variable_set('jquery_update_jquery_version', '1.10');
+   }
+}
