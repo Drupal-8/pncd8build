@@ -1,0 +1,6 @@
+name: Purencool block
+description: Pnc generic blocks
+package: Purencool
+core: 8.x
+type: module
+version: 1.0
